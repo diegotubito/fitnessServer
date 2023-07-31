@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const {connectDataBase} = require('../Features/Database/database_controller')
+const {connectDataBase} = require('../Feature/Database/database_controller')
 const http = require('http');
 const socketIO = require('socket.io');
 const RemoteNotification = require('../Apns/apns')
@@ -29,20 +29,8 @@ class Server {
     }
 
     #routes() {
-        this.app.use('', require('../Features/Database/database_routes'))
-        /*
-        this.app.use('', require('../Feature/User/user_router'))
-        this.app.use('', require('../Feature/Item/item_routes'))
-        this.app.use('', require('../Feature/Spot/spot_routes'))
-        this.app.use('', require('../Feature/Availability/availability.route'))
-        this.app.use('', require('../Feature/Assignment/assignment_route'))
-        this.app.use('', require('../Feature/Image/image_route'))
-
-        this.app.use('/api/v1/auth', require('../Feature/Login/login_router'))
-        this.app.use('/api/v1/stripe', require('../Feature/Stripe/stripe_route'))
-        this.app.use('/api/v1/mp', require('../Feature/MercadoPago/mp_link_router'))
-        this.app.use('/api/v1/mp/sdk', require('../Feature/MercadoPago/mp_sdk_router'))
-        */
+        this.app.use('', require('../Feature/Database/database_routes'))
+        this.app.use('', require('../Feature/ServerConnection/server_connection_routes'))
     }
 
     #configureSockets() {
