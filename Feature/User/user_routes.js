@@ -3,7 +3,7 @@ const { getUsers, createUser, deleteUser, updateUser, disableUser, enableUser } 
 const validateToken = require('../../Middleware/verify_token')
 const router = Router()
 
-router.get('/user', [validateToken], getUsers)
+router.get('/user', getUsers)
 router.post('/user', createUser)
 router.delete('/user', [validateToken], deleteUser)
 router.put('/user', [validateToken], updateUser)
