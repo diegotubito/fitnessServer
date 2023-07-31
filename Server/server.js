@@ -29,8 +29,9 @@ class Server {
     }
 
     #routes() {
-        this.app.use('', require('../Feature/Database/database_routes'))
         this.app.use('', require('../Feature/ServerConnection/server_connection_routes'))
+        this.app.use('/api/v1', require('../Feature/User/user_routes'))
+        this.app.use('/api/v1', require('../Feature/Login/login_routes'))
     }
 
     #configureSockets() {
@@ -64,8 +65,12 @@ class Server {
 
     connect() {
         this.server.listen(process.env.PORT, () => {
-            console.log('Server running at', process.env.PORT);
+            this.#connectDB();
         });
+    }
+
+    #connectDB() {
+        connectDataBase()
     }
 }
 
