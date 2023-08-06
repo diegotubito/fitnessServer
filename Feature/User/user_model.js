@@ -16,12 +16,10 @@ const UserSchema = new Schema({
         require: [true, 'password field is required']
     },
     firstName : {
-        type : String, 
-        required : [true, 'firstName field is required.']
+        type : String
     },
     lastName : {
-        type : String, 
-        required : [true, 'lastname field is required.']
+        type : String 
     },
     thumbnailImage : {
         type : String
