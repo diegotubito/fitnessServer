@@ -9,7 +9,8 @@ const doLogin = async (req, res) => {
 
     if (!email || !password) {
         return res.status(400).json({
-            message: 'email and password is needed.'
+            title: '_LOGIN_ERROR',
+            message: '_WRONG_USER_PASSWORD'
         })
     }
 
@@ -21,14 +22,16 @@ const doLogin = async (req, res) => {
         const user = await User.findOne(filter)
         if (!user) {
             return res.status(400).json({
-                message: 'email not found.'
+                title: '_LOGIN_ERROR',
+                message: '_WRONG_USER_PASSWORD'
             })    
         }
 
         const isValid = bcrypt.compareSync(password, user.password)
         if (!isValid) {
             return res.status(400).json({
-                message: 'password is not correct'
+                title: '_LOGIN_ERROR',
+                message: '_WRONG_USER_PASSWORD'
             })
         }
 
