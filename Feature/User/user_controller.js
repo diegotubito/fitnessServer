@@ -1,4 +1,5 @@
 const User = require('./user_model')
+const Phone = require('./user_model')
 const handleError = require('../../Common/error_response')
 const bcrypt = require('bcrypt')
 const { request } = require('express')
@@ -63,14 +64,18 @@ const updateUser = async (req, res) => {
 
     try {
         const user = await User.findByIdAndUpdate(id, cleanBody, options)
-
         if (!user) {
             return res.status(400).json({
                 message: 'user not found'
             })
         }
+       console.log(req.body.phone)
+        if (req.body.phone) {
+            user.phone = req.body.phone
+            await user.save()
+        }
 
-        res.json( {
+        res.json({
             user
         })
     } catch (error) {

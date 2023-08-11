@@ -1,5 +1,20 @@
 const { Schema, model } = require('mongoose')
 
+const PhoneSchema = new Schema({
+    countryName: {
+        type: String
+    },
+    number: {
+        type: String
+    },
+    phoneCode: {
+        type: String
+    },
+    countryCode: {
+        type: String
+    }
+})
+
 const UserSchema = new Schema({
     username: {
         type: String,
@@ -32,8 +47,8 @@ const UserSchema = new Schema({
         type: String,
         required: [true, 'User role is required']
     },
-    phoneNumber : {
-        type: String
+    phone: {
+        type: PhoneSchema
     },
     emailVerified: {
         type: Boolean,

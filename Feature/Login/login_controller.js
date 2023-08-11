@@ -35,7 +35,7 @@ const doLogin = async (req, res) => {
             })
         }
 
-        const token = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 * 5 })
+        const token = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 * 2 })
 
         res.json({
             user,
