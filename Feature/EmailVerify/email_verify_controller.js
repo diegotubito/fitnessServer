@@ -61,7 +61,7 @@ const sendEmail = (req = request, res = response) => {
     const host = req.headers.host
     console.log(host)
     const _id = req.user._id
-    const link = `${host}/api/v1/verifyEmail?_id=${_id}&token=${tokenForEmail}`
+    const link = `https://${host}/api/v1/verifyEmail?_id=${_id}&token=${tokenForEmail}`
     
     console.log(link)
    // return res.json('')
