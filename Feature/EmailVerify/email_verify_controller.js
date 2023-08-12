@@ -47,7 +47,7 @@ const setVerifyEmailToTrue = async (req = request, res = response) => {
 }
 
 const sendEmail = (req = request, res = response) => {
-    const {email, url} = req.body
+    const {email} = req.body
 
     if (!email) {
         return res.status(400).json({
@@ -59,12 +59,13 @@ const sendEmail = (req = request, res = response) => {
     const tokenForEmail = jsonwebtoken.sign({ _id: req.user._id }, 'Authorization', { expiresIn: 60 * 5 })
 
     const host = req.headers.host
-    console.log(host)
+    let domain = "https://"
+    if (host.includes('127.0.0.1:')) {
+        domain = "http://";
+    }
+
     const _id = req.user._id
-    const link = `https://${host}/api/v1/verifyEmail?_id=${_id}&token=${tokenForEmail}`
-    
-    console.log(link)
-   // return res.json('')
+    const link = `${domain}${host}/api/v1/verifyEmail?_id=${_id}&token=${tokenForEmail}`
     
     const htmlContent = '<p>Click <a href="' + link + '">here</a> to verify your email account.</p>'
         
