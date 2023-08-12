@@ -14,10 +14,10 @@ const doLogin = async (req, res) => {
     const password = req.body.password
 
     if (!email || !password) {
-        return res.status(400).json({
-            title: '_LOGIN_ERROR',
-            message: '_WRONG_USER_PASSWORD'
-        })
+       return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        }) 
     }
 
     const filter = {
@@ -101,7 +101,7 @@ const enable2FA = async (req, res) => {
             host: "smtp.gmail.com",
                auth: {
                     user: 'bodylifeapp@gmail.com',
-                    pass: 'sqbz ewzk jjxx hckr',
+                    pass: process.env.GMAIL_APP_PASSWORD,
                  },
             secure: true,
         });

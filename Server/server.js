@@ -32,6 +32,7 @@ class Server {
         this.app.use('', require('../Feature/ServerConnection/server_connection_routes'))
         this.app.use('/api/v1', require('../Feature/User/user_routes'))
         this.app.use('/api/v1', require('../Feature/Login/login_routes'))
+        this.app.use('/api/v1', require('../Feature/EmailVerify/email_verify_routes'))
     }
 
     #configureSockets() {
