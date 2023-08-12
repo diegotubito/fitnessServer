@@ -2,6 +2,7 @@ const handleError = require("../../Common/error_response")
 const User = require('../User/user_model')
 const bcrypt = require('bcrypt')
 const jsonwebtoken = require('jsonwebtoken')
+const nodemailer = require('nodemailer');
 
 // 2FA library
 const speakeasy = require('speakeasy');
@@ -78,9 +79,42 @@ const enable2FA = async (req, res) => {
 
     user.twoFactorSecret = secret.base32;
     user.twoFactorEnabled = true;
-    await user.save();
-    QRCode.toDataURL(secret.otpauth_url, (err, data_url) => {
-        res.send(`<img src="${data_url}">`);
+    
+    QRCode.toDataURL(secret.otpauth_url, async (err, data_url) => {
+        if (err) {
+            return res.status(500).json({ error: 'Could not generate QR code' });
+        }
+        
+        const htmlContent = `<h1>2FA QR Code</h1><img src="${data_url}">`;
+        
+        // Setup email data with QR code image
+        const mailOptions = {
+            from: '"Fitness Mobile 💪" <bodylifeapp@gmail.com>',
+            to: "diegodavid@icloud.com",
+            subject: 'Enable 2FA for Your App Name',
+            html: htmlContent
+        };
+
+        // Create transporter and send email
+        const transporter = nodemailer.createTransport({
+            port: 465,               // true for 465, false for other ports
+            host: "smtp.gmail.com",
+               auth: {
+                    user: 'bodylifeapp@gmail.com',
+                    pass: 'sqbz ewzk jjxx hckr',
+                 },
+            secure: true,
+        });
+
+        transporter.sendMail(mailOptions, async (error, info) => {
+            if (error) {
+                console.error(error.toString());
+                return res.status(500).json({ error: 'Could not send email. 2FA not enabled.' });
+            }
+
+            await user.save();
+            res.status(200).json({ message: '2FA enabled, QR code sent to email' });
+        });
     });
 }
 

@@ -6,4 +6,8 @@ const handleError = (res, error) => {
     })
 }
 
+const sendEmail = () => {
+    
+}
+
 module.exports = handleError
