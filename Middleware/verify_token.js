@@ -26,7 +26,7 @@ const verifyToken = async (req = request, res = response, next) => {
                     message: 'user is deactivated'
                 })            
             }
-
+            req.user = user
             next()
         } catch (error) {
             return res.status(401).json({

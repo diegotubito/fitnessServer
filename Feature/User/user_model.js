@@ -54,6 +54,13 @@ const UserSchema = new Schema({
         type: Boolean,
         default: false
     },
+    twoFactorEnabled: { 
+        type: Boolean,
+        default: false 
+    },
+    twoFactorSecret: { 
+        type: String
+    },
     deviceTokens: [{
         type: String
     }]
