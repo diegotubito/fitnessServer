@@ -85,13 +85,55 @@ const enable2FA = async (req, res) => {
             return res.status(500).json({ error: 'Could not generate QR code' });
         }
         
-        const htmlContent = `<h1>2FA QR Code</h1><img src="${data_url}">`;
+        const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2FA QR Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+            margin: 40px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4a5568;
+        }
+        img {
+            border: 4px solid #4a5568;
+            border-radius: 10px;
+        }
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>2FA QR Code</h1>
+        <p>Scan the QR code below with your 2-factor authentication (2FA) app to enable 2FA for your account.</p>
+        <img src="${data_url}" alt="2FA QR Code">
+        <p>If you have any issues, please contact our support team.</p>
+    </div>
+</body>
+</html>`;
+
         
         // Setup email data with QR code image
         const mailOptions = {
             from: '"Fitness Mobile 💪" <bodylifeapp@gmail.com>',
             to: "diegodavid@icloud.com",
-            subject: 'Enable 2FA for Your App Name',
+            subject: 'Enable Two Factor Authentication',
             html: htmlContent
         };
 
@@ -100,9 +142,9 @@ const enable2FA = async (req, res) => {
             port: 465,               // true for 465, false for other ports
             host: "smtp.gmail.com",
                auth: {
-                    user: 'bodylifeapp@gmail.com',
-                    pass: process.env.GMAIL_APP_PASSWORD,
-                 },
+                user: process.env.GMAIL_EMAIL,
+                pass: process.env.GMAIL_APP_PASSWORD,
+            },
             secure: true,
         });
 

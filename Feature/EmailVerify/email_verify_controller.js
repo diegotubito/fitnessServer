@@ -67,13 +67,48 @@ const sendEmail = (req = request, res = response) => {
     const _id = req.user._id
     const link = `${domain}${host}/api/v1/verifyEmail?_id=${_id}&token=${tokenForEmail}`
     
-    const htmlContent = '<p>Click <a href="' + link + '">here</a> to verify your email account.</p>'
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Email Verification</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 40px;
+            }
+            .container {
+                background-color: #f9f9f9;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            }
+            .verify-link {
+                color: #007bff;
+                text-decoration: none;
+            }
+            .verify-link:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Email Verification</h1>
+            <p>Please click the link below to verify your email address:</p>
+            <a href="${link}" class="verify-link">Verify My Email</a>
+            <p>If you did not request this verification, please ignore this email.</p>
+        </div>
+    </body>
+    </html>`;
         
     // Setup email data with QR code image
     const mailOptions = {
         from: '"Fitness Mobile 💪" <bodylifeapp@gmail.com>',
-        to: "diegodavid@icloud.com",
-        subject: 'Enable 2FA for Your App Name',
+        to: email,
+        subject: 'Verify your email',
         html: htmlContent
     };
 
@@ -82,7 +117,7 @@ const sendEmail = (req = request, res = response) => {
         port: 465,               // true for 465, false for other ports
         host: "smtp.gmail.com",
            auth: {
-                user: 'bodylifeapp@gmail.com',
+                user: process.env.GMAIL_EMAIL,
                 pass: process.env.GMAIL_APP_PASSWORD,
              },
         secure: true,
