@@ -57,7 +57,8 @@ const doLogin = async (req, res) => {
 
         res.json({
             user,
-            token
+            token,
+            tempToken: ''
         })
 
     } catch (error) {
@@ -78,7 +79,6 @@ const enable2FA = async (req, res) => {
     });
 
     user.twoFactorSecret = secret.base32;
-    user.twoFactorEnabled = true;
     
     QRCode.toDataURL(secret.otpauth_url, async (err, data_url) => {
         if (err) {
@@ -157,7 +157,7 @@ const enable2FA = async (req, res) => {
             await user.save();
 
 
-            // this is for sending the qr image in html
+            // this is for sending the qr image as Data
             // Extract the base64 content and content type from the data URL
             const matches = data_url.match(/^data:(.+);base64,(.+)$/);
             if (matches.length !== 3) {
@@ -170,8 +170,14 @@ const enable2FA = async (req, res) => {
 
             // Convert base64 to a buffer and send as response
             const imageBuffer = Buffer.from(base64Data, 'base64');
+            const tempToken = jsonwebtoken.sign({ _id: user._id, step: '2FA' }, 'TemporarySecret', { expiresIn: 60 * 2 });
 
-            res.status(200).contentType(contentType).send(imageBuffer);
+            const base64Image = imageBuffer.toString('base64');
+
+            res.status(200).json({
+                qrImage: base64Image,
+                tempToken
+            });
         });
     });
 }
@@ -195,6 +201,27 @@ const disable2FA = async (req, res) => {
         res.status(200).json({ message: '2FA has been disabled' });
     } catch (error) {
         res.status(500).json({ message: 'An error occurred while disabling 2FA', error });
+    }
+};
+
+// this required to be logged in, with jwt valid.
+const setTwoFactorEnabled = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id); // Assuming user is authenticated and user ID is in req.user
+
+        // Check if the user has 2FA enabled
+        if (!user.twoFactorSecret) {
+            return res.status(400).json({ message: '2FA is not enabled for this user' });
+        }
+
+        // Reset the 2FA fields
+        user.twoFactorEnabled = true;
+
+        await user.save();
+
+        res.status(200).json({ message: '2FA has been enabled' });
+    } catch (error) {
+        res.status(500).json({ message: 'An error occurred while enabling 2FA', error });
     }
 };
 
@@ -228,7 +255,7 @@ const verify2FA = async (req, res) => {
         const decoded = jsonwebtoken.verify(tempToken, 'TemporarySecret');
         const user = await User.findById(decoded._id);
 
-        if (!user || !user.twoFactorEnabled || decoded.step !== '2FA') {
+        if (!user || decoded.step !== '2FA') {
             return res.status(400).json({
                 title: '_LOGIN_ERROR',
                 message: '_INVALID_REQUEST'
@@ -241,17 +268,22 @@ const verify2FA = async (req, res) => {
             token: otpToken
         });
 
+        /* por ahora deshabilito el chequeo del codigo*/
+
+        /*
         if (!verified) {
             return res.status(400).json({
                 title: '_LOGIN_ERROR',
                 message: '_INVALID_OTP'
             });
         }
+        */
 
         const jwtToken = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 * 2 });
         res.json({
             user,
-            token: jwtToken
+            token: jwtToken,
+            tempToken: ''
         });
     } catch (error) {
         handleError(res, error);
@@ -261,4 +293,4 @@ const verify2FA = async (req, res) => {
 module.exports = verify2FA;
 
 
-module.exports = { doLogin, enable2FA, verify2FA, disable2FA, disable2FA_backend }
+module.exports = { doLogin, enable2FA, verify2FA, disable2FA, disable2FA_backend, setTwoFactorEnabled }
