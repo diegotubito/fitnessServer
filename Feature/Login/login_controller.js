@@ -84,7 +84,7 @@ const enable2FA = async (req, res) => {
         if (err) {
             return res.status(500).json({ error: 'Could not generate QR code' });
         }
-        
+
         const htmlContent = `
 <!DOCTYPE html>
 <html lang="en">
@@ -123,6 +123,7 @@ const enable2FA = async (req, res) => {
         <h1>2FA QR Code</h1>
         <p>Scan the QR code below with your 2-factor authentication (2FA) app to enable 2FA for your account.</p>
         <img src="${data_url}" alt="2FA QR Code">
+        <p>Your activation code: ${secret.base32}</p>
         <p>If you have any issues, please contact our support team.</p>
     </div>
 </body>
@@ -176,7 +177,8 @@ const enable2FA = async (req, res) => {
 
             res.status(200).json({
                 qrImage: base64Image,
-                tempToken
+                tempToken,
+                activationCode: secret.base32
             });
         });
     });
