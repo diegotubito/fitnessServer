@@ -59,7 +59,8 @@ const UserSchema = new Schema({
         default: false 
     },
     twoFactorSecret: { 
-        type: String
+        type: String,
+        default: ""
     },
     deviceTokens: [{
         type: String

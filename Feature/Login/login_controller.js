@@ -155,7 +155,23 @@ const enable2FA = async (req, res) => {
             }
 
             await user.save();
-            res.status(200).json({ message: '2FA enabled, QR code sent to email' });
+
+
+            // this is for sending the qr image in html
+            // Extract the base64 content and content type from the data URL
+            const matches = data_url.match(/^data:(.+);base64,(.+)$/);
+            if (matches.length !== 3) {
+                res.status(500).send('Error processing QR code data');
+                return;
+            }
+
+            const contentType = matches[1];
+            const base64Data = matches[2];
+
+            // Convert base64 to a buffer and send as response
+            const imageBuffer = Buffer.from(base64Data, 'base64');
+
+            res.status(200).contentType(contentType).send(imageBuffer);
         });
     });
 }
