@@ -270,14 +270,12 @@ const verify2FA = async (req, res) => {
 
         /* por ahora deshabilito el chequeo del codigo*/
 
-        /*
         if (!verified) {
-            return res.status(400).json({
+            return res.status(432).json({
                 title: '_LOGIN_ERROR',
                 message: '_INVALID_OTP'
             });
         }
-        */
 
         const jwtToken = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 * 2 });
         res.json({
