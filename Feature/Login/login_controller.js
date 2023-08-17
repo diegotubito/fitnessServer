@@ -43,7 +43,7 @@ const doLogin = async (req, res) => {
 
 
         if (user.twoFactorEnabled) {
-            const tempToken = jsonwebtoken.sign({ _id: user._id, step: '2FA' }, 'TemporarySecret', { expiresIn: 60 * 2 });
+            const tempToken = jsonwebtoken.sign({ _id: user._id, step: '2FA' }, 'TemporarySecret', { expiresIn: 60 * 5 });
 
             return res.json({
                 twoFactorEnabled: true,
@@ -53,7 +53,7 @@ const doLogin = async (req, res) => {
             })
         }
 
-        const token = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 * 2 })
+        const token = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 })
 
         res.json({
             user,
@@ -171,7 +171,7 @@ const enable2FA = async (req, res) => {
 
             // Convert base64 to a buffer and send as response
             const imageBuffer = Buffer.from(base64Data, 'base64');
-            const tempToken = jsonwebtoken.sign({ _id: user._id, step: '2FA' }, 'TemporarySecret', { expiresIn: 60 * 2 });
+            const tempToken = jsonwebtoken.sign({ _id: user._id, step: '2FA' }, 'TemporarySecret', { expiresIn: 60 * 5 });
 
             const base64Image = imageBuffer.toString('base64');
 
@@ -279,7 +279,7 @@ const verify2FA = async (req, res) => {
             });
         }
 
-        const jwtToken = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 * 2 });
+        const jwtToken = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 });
         res.json({
             user,
             token: jwtToken,
@@ -290,7 +290,49 @@ const verify2FA = async (req, res) => {
     }
 };
 
+const verify2FAWithNoTempToken = async (req, res) => {
+    const otpToken = req.body.otpToken;
+
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(400).json({
+                title: '_LOGIN_ERROR',
+                message: '_INVALID_REQUEST'
+            });
+        }
+
+        const verified = speakeasy.totp.verify({
+            secret: user.twoFactorSecret,
+            encoding: 'base32',
+            token: otpToken
+        });
+
+        /* por ahora deshabilito el chequeo del codigo*/
+
+        if (!verified) {
+            return res.status(432).json({
+                title: '_LOGIN_ERROR',
+                message: '_INVALID_OTP'
+            });
+        }
+
+        const jwtToken = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 });
+        res.json({
+            user,
+            token: jwtToken
+        });
+    } catch (error) {
+        handleError(res, error);
+    }
+};
+
+const refreshToken = (req, res) => {
+    
+}
+
 module.exports = verify2FA;
 
 
-module.exports = { doLogin, enable2FA, verify2FA, disable2FA, disable2FA_backend, setTwoFactorEnabled }
+module.exports = { doLogin, enable2FA, verify2FA, disable2FA, disable2FA_backend, setTwoFactorEnabled, verify2FAWithNoTempToken }
