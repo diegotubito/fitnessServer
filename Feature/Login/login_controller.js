@@ -9,8 +9,8 @@ const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 const { request, response } = require("express");
 
-const accessTokenExpiration = 60 * 5
-const refreshTokenExpiration = 60 * 60 * 24 * 30
+const accessTokenExpiration = 60 * 1
+const refreshTokenExpiration = 60 * 3
 
 const doLogin = async (req, res) => {
     const email = req.body.email
@@ -71,7 +71,7 @@ const doLogin = async (req, res) => {
             accessTokenExpirationDateString: accessTokenExpirationDate,
             tempToken: '',
             refreshToken,
-            refreshTokenExpirationDate
+            refreshTokenExpirationDateString: refreshTokenExpirationDate
         })
 
     } catch (error) {
