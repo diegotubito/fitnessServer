@@ -7,7 +7,10 @@ const nodemailer = require('nodemailer');
 // 2FA library
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
+const { request, response } = require("express");
 
+const accessTokenExpiration = 60 * 5
+const refreshTokenExpiration = 60 * 60 * 24 * 30
 
 const doLogin = async (req, res) => {
     const email = req.body.email
@@ -49,16 +52,26 @@ const doLogin = async (req, res) => {
                 twoFactorEnabled: true,
                 tempToken,
                 user,
-                token: '' //  not yet available because we need to finish auth
+                accessToken: '', //  not yet available because we need to finish auth
+                accessTokenExpirationDateString: Date()
             })
         }
 
-        const token = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 })
+        const accessToken = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: accessTokenExpiration })
+        const refreshToken = jsonwebtoken.sign({ _id: user._id}, 'RefreshAuthorization', {expiresIn: refreshTokenExpiration })
+
+        var currentDate = new Date(); // Get the current date and time
+        var accessTokenExpirationDate = new Date(currentDate.getTime() + accessTokenExpiration * 1000)
+
+        var refreshTokenExpirationDate = new Date(currentDate.getTime() + refreshTokenExpiration * 1000)
 
         res.json({
             user,
-            token,
-            tempToken: ''
+            accessToken,
+            accessTokenExpirationDateString: accessTokenExpirationDate,
+            tempToken: '',
+            refreshToken,
+            refreshTokenExpirationDate
         })
 
     } catch (error) {
@@ -279,12 +292,17 @@ const verify2FA = async (req, res) => {
             });
         }
 
-        const jwtToken = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 });
+        const accessToken = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: accessTokenExpiration })
+
+        var currentDate = new Date(); // Get the current date and time
+        var accessTokenExpirationDate = new Date(currentDate.getTime() + accessTokenExpiration * 1000)
+
         res.json({
             user,
-            token: jwtToken,
+            accessToken,
+            accessTokenExpirationDateString: accessTokenExpirationDate,
             tempToken: ''
-        });
+        })
     } catch (error) {
         handleError(res, error);
     }
@@ -318,21 +336,43 @@ const verify2FAWithNoTempToken = async (req, res) => {
             });
         }
 
-        const jwtToken = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: 60 });
+        const accessToken = jsonwebtoken.sign({ _id: user._id, name: user.firstName }, 'Authorization', { expiresIn: accessTokenExpiration })
+
+        var currentDate = new Date(); // Get the current date and time
+        var accessTokenExpirationDate = new Date(currentDate.getTime() + accessTokenExpiration * 1000)
+
         res.json({
             user,
-            token: jwtToken
-        });
+            accessToken,
+            accessTokenExpirationDateString: accessTokenExpirationDate,
+        })
     } catch (error) {
         handleError(res, error);
     }
 };
 
-const refreshToken = (req, res) => {
-    
+const refreshToken = (req = request, res=response) => {
+    const authorization = req.headers.authorization
+    jsonwebtoken.verify(authorization, 'RefreshAuthorization', (error, decode) => {
+        if (error) {
+            return res.status(401).json({
+                message: error.message
+            })
+        }
+
+        var accessToken = jsonwebtoken.sign({_id: decode._id}, 'Authorization', { expiresIn: accessTokenExpiration})
+
+        var currentDate = new Date(); // Get the current date and time
+        var accessTokenExpirationDate = new Date(currentDate.getTime() + accessTokenExpiration * 1000)
+
+        res.json({
+            accessToken,
+            accessTokenExpirationDateString: accessTokenExpirationDate,
+        })
+    })
 }
 
 module.exports = verify2FA;
 
 
-module.exports = { doLogin, enable2FA, verify2FA, disable2FA, disable2FA_backend, setTwoFactorEnabled, verify2FAWithNoTempToken }
+module.exports = { doLogin, enable2FA, verify2FA, disable2FA, disable2FA_backend, setTwoFactorEnabled, verify2FAWithNoTempToken, refreshToken }

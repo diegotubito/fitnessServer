@@ -69,7 +69,6 @@ const updateUser = async (req, res) => {
                 message: 'user not found'
             })
         }
-       console.log(req.body.phone)
         if (req.body.phone) {
             user.phone = req.body.phone
             await user.save()
