@@ -1,5 +1,5 @@
 const Router = require('express')
-const { uploadFile, downloadFile, deleteFile, uploadMultipleFiles } = require('./storage_controller')
+const { uploadFile, downloadFile, deleteFile, uploadMultipleFiles, getImageUrl } = require('./storage_controller')
 const router = Router()
 const multer = require('multer');
 const verifyToken = require('../../Middleware/verify_token');
@@ -19,6 +19,8 @@ router.post('/storage/multiple', [
 ], uploadMultipleFiles)
 
 router.get('/storage', [verifyToken], downloadFile)
+router.post('/storage/imageUrl', getImageUrl)
+
 router.delete('/storage', [verifyToken], deleteFile)
 
 module.exports = router
