@@ -1,12 +1,14 @@
 const { request, response } = require("express");
 const path = require('path');
+const axios = require('axios');
+const fs = require('fs');
 
 const uploadFile = async (req = request, res = response) => {
     const fileBuffer = req.file.buffer;
     const filepath = req.query.filepath;
     const bucket = req.app.get('bucket');
     const file = bucket.file(filepath);
-    
+
     try {
         // Save the file to the bucket
         await new Promise((resolve, reject) => {
@@ -98,4 +100,30 @@ const deleteFile = (req = request, res = response) => {
     });
 }
 
-module.exports = { uploadFile, downloadFile, deleteFile }
+const uploadMultipleFiles = (req, res) => {
+    const files = req.files;
+    const filepath = req.query.filepath;
+
+    if (!files) {
+        return res.status(400).json({ message: 'No files uploaded' });
+    }
+
+    const bucket = req.app.get('bucket');
+
+    // Promise array to handle all uploads
+    const uploads = files.map((file, index) => {
+        const pathInBucket = `${filepath}/${index}.${file.mimetype.split('/')[1]}`;
+        const firebaseFile = bucket.file(pathInBucket);
+        return firebaseFile.save(file.buffer);
+    });
+
+    // Execute all promises
+    Promise.all(uploads)
+        .then(() => res.status(200).json({ message: 'Files uploaded successfully' }))
+        .catch((err) => {
+            console.error('Failed to upload files:', err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        });
+};
+
+module.exports = { uploadFile, downloadFile, deleteFile, uploadMultipleFiles }
