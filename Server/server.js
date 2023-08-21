@@ -5,6 +5,8 @@ const {connectDataBase} = require('../Feature/Database/database_controller')
 const http = require('http');
 const socketIO = require('socket.io');
 const RemoteNotification = require('../Apns/apns')
+const admin = require('firebase-admin');
+const serviceAccount = require('../fitnessapp-3b183-firebase-adminsdk-703jw-ce56d889d7.json'); // Update the path to your JSON file
 
 class Server {
     constructor() {
@@ -21,6 +23,17 @@ class Server {
         this.app.clients = new Map()
         
         this.app.remoteNotification = new RemoteNotification()
+
+        this.#setupFirebase()
+        const bucket = admin.storage().bucket();
+        this.app.set('bucket', bucket);
+    }
+
+    #setupFirebase() {
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+            storageBucket: 'gs://fitnessapp-3b183.appspot.com' // Update with your bucket name
+        });
     }
 
     #middleware() {
@@ -33,6 +46,7 @@ class Server {
         this.app.use('/api/v1', require('../Feature/User/user_routes'))
         this.app.use('/api/v1', require('../Feature/Login/login_routes'))
         this.app.use('/api/v1', require('../Feature/EmailVerify/email_verify_routes'))
+        this.app.use('/api/v1', require('../Feature/Storage/storage_routes'))
     }
 
     #configureSockets() {
