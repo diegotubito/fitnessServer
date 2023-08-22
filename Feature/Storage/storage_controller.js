@@ -7,7 +7,7 @@ const uploadFile = async (req = request, res = response) => {
     const fileBuffer = req.file.buffer;
     const filepath = req.query.filepath;
     const bucket = req.app.get('bucket');
-    const file = bucket.file(filepath);
+    const file = bucket.file(`${filepath}`);
 
     try {
         // Save the file to the bucket
@@ -25,7 +25,6 @@ const uploadFile = async (req = request, res = response) => {
         });
 
         res.status(200).json({
-            message: 'upload success',
             url: signedUrl // The URL to access the file
         });
     } catch (err) {
