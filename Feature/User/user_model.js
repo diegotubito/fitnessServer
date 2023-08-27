@@ -15,6 +15,12 @@ const PhoneSchema = new Schema({
     }
 })
 
+const ProfileImageSchema = new Schema({
+    url: {
+        type: String
+    }
+}, {timestamps: true})
+
 const UserSchema = new Schema({
     username: {
         type: String,
@@ -36,8 +42,8 @@ const UserSchema = new Schema({
     lastName : {
         type : String 
     },
-    thumbnailImage : {
-        type : String
+    profileImage : {
+        type : ProfileImageSchema
     },
     isEnabled: {
         type: Boolean,

@@ -3,6 +3,7 @@ const Phone = require('./user_model')
 const handleError = require('../../Common/error_response')
 const bcrypt = require('bcrypt')
 const { request } = require('express')
+const { emit } = require('../../Socket/socket_helper')
 
 const getUsers = async (req = request, res) => {
     try {
@@ -74,11 +75,17 @@ const updateUser = async (req, res) => {
             await user.save()
         }
 
+        emit(req, [user.deviceTokens], 'new-message', {
+            title: 'testing abc',
+            message: 'ABC',
+            action: 'needUpdate'
+        })
+
         res.json({
             user
         })
     } catch (error) {
-        handleError(res, error)
+        handleError(res, error.message)
     }
 }
 

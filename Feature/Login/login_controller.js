@@ -10,7 +10,7 @@ const QRCode = require('qrcode');
 const { request, response } = require("express");
 
 const accessTokenExpiration = 60 * 15
-const refreshTokenExpiration = 60 * 60
+const refreshTokenExpiration = 60 * 60 * 24 * 365
 
 const doLogin = async (req, res) => {
     const email = req.body.email

@@ -8,7 +8,7 @@ const uploadFile = async (req = request, res = response) => {
     const filepath = req.query.filepath;
     const bucket = req.app.get('bucket');
     const file = bucket.file(`${filepath}`);
-
+    
     try {
         // Save the file to the bucket
         await new Promise((resolve, reject) => {
