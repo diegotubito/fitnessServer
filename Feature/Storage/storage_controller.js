@@ -28,7 +28,7 @@ const uploadFile = async (req = request, res = response) => {
             url: signedUrl // The URL to access the file
         });
     } catch (err) {
-        console.error('Failed to upload file:', err);
+        console.error('Failed to upload file:', err.message);
         res.status(500).json({
             title: '_500_ERROR',
             message: err.message
@@ -45,7 +45,7 @@ const downloadFile = (req, res) => {
     // Check if the file exists
     file.exists((err, exists) => {
         if (err) {
-            console.error('Failed to check file existence:', err);
+            console.error('Failed to check file existence:', err.message);
             res.status(500).json({ message: 'Internal Server Error' });
         } else if (!exists) {
             res.status(404).json({ message: 'File not found' });
@@ -91,7 +91,7 @@ const deleteFile = (req = request, res = response) => {
     // Delete the file
     file.delete((err) => {
         if (err) {
-            console.error('Failed to delete file:', err);
+            console.error('Failed to delete file:', err.message);
             res.status(500).json({ message: 'Internal Server Error' });
         } else {
             res.status(200).json({ message: 'File deleted successfully' });
@@ -120,14 +120,13 @@ const uploadMultipleFiles = (req, res) => {
     Promise.all(uploads)
         .then(() => res.status(200).json({ message: 'Files uploaded successfully' }))
         .catch((err) => {
-            console.error('Failed to upload files:', err);
+            console.error('Failed to upload files:', err.message);
             res.status(500).json({ message: 'Internal Server Error' });
         });
 };
 
 const getImageUrl = async (req, res) => {
-    const imageURL = req.body.url
-
+    const imageURL = req.query.url
     try {
         const response = await axios({
             method: 'get',
@@ -142,7 +141,7 @@ const getImageUrl = async (req, res) => {
         console.log('image success')
         response.data.pipe(res);
     } catch (error) {
-        console.error('Error downloading the image:', error);
+        console.error('Error downloading the image:', error.message);
         res.status(500).send('Error downloading the image');
     }
 }

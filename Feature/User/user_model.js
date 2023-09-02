@@ -18,7 +18,7 @@ const PhoneSchema = new Schema({
 const ProfileImageSchema = new Schema({
     url: {
         type: String
-    }
+    } 
 }, {timestamps: true})
 
 const UserSchema = new Schema({

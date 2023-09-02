@@ -5,7 +5,7 @@ const multer = require('multer');
 const verifyToken = require('../../Middleware/verify_token');
 const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 10 * 1024 * 1024 }, // 5 MB
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
 });
 
 router.post('/storage', [
@@ -19,7 +19,7 @@ router.post('/storage/multiple', [
 ], uploadMultipleFiles)
 
 router.get('/storage', [verifyToken], downloadFile)
-router.post('/storage/imageUrl', getImageUrl)
+router.get('/storage/imageUrl', getImageUrl)
 
 router.delete('/storage', [verifyToken], deleteFile)
 
