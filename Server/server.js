@@ -47,6 +47,9 @@ class Server {
         this.app.use('/api/v1', require('../Feature/Login/login_routes'))
         this.app.use('/api/v1', require('../Feature/EmailVerify/email_verify_routes'))
         this.app.use('/api/v1', require('../Feature/Storage/storage_routes'))
+        this.app.use('/api/v1', require('../Feature/Workspace/workspace_routes'))
+        this.app.use('/api/v1', require('../Feature/Role/role_routes'))
+        this.app.use('/api/v1', require('../Feature/Invite/invite_routes'))
     }
 
     #configureSockets() {

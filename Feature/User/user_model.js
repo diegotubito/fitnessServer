@@ -49,10 +49,6 @@ const UserSchema = new Schema({
         type: Boolean,
         default: true
     },
-    role: {
-        type: String,
-        required: [true, 'User role is required']
-    },
     phone: {
         type: PhoneSchema
     },

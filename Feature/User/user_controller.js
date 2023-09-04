@@ -15,7 +15,7 @@ const getUsers = async (req = request, res) => {
 }
 
 const createUser = async (req, res) => {
-    if (!req.body.email || !req.body.username || !req.body.password || !req.body.role) {
+    if (!req.body.email || !req.body.username || !req.body.password) {
         return res.status(400).json({
             title: '_400_ERROR_TITLE',
             message: '_400_ERROR_MESSAGE'
