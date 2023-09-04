@@ -1,6 +1,7 @@
 const handleError = require("../../Common/error_response")
 const Invitation = require('./invite_model')
 const Workspace = require('../Workspace/workspace_model')
+const { isMemberInWorkspace } = require("../../Common/common_functions")
 
 const getAllInvitation = async (req, res) => {
     try {
@@ -182,8 +183,8 @@ const doAccept = async (req, res) => {
             user: acceptedInvitation.user,
             role: acceptedInvitation.role
         }
-        if (!isMemberInWorkspace(workspace.members, newMember)) {
-            console.log('saved new member')
+        
+        if (!isMemberInWorkspace(workspace.members, acceptedInvitation.user)) {
             workspace.members.push(newMember)
             const updatedWorkpace = await workspace.save()
         }
@@ -195,11 +196,6 @@ const doAccept = async (req, res) => {
     } catch (error) {
         handleError(res, error)
     }
-}
-
-// Create a function to check if a member is already in the workspace
-const isMemberInWorkspace = (members, newMember) => {
-    return members.some(member => member.user.toString() === newMember.user.toString());
 }
 
 const removeAllInvitation = async (req, res) => {
