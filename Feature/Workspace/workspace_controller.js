@@ -5,7 +5,7 @@ const handleError = require("../../Common/error_response")
 const getWorkspace = async (req = request, res = response) => {
     try {
         const workspaces = await Workspace.find()
-        
+
         res.json({
             workspaces
         })
@@ -15,27 +15,27 @@ const getWorkspace = async (req = request, res = response) => {
 }
 
 const getWorkspaceByUserId = async (req = request, res = response) => {
-    const {userId} = req.query
+    const { userId } = req.query
     if (!userId) {
         return res.status(400).json({
             title: '_400_ERROR_TITLE',
             message: '_400_ERROR_MESSAGE'
-        }) 
+        })
     }
 
     try {
         const workspaces = await Workspace.find({
             $or: [
-                { "owner": userId }, 
+                { "owner": userId },
                 { "members.user": userId }
             ]
         });
-        
+
         if (!workspaces) {
             return res.status(400).json({
                 title: '_400_ERROR_TITLE',
                 message: '_400_ERROR_MESSAGE'
-            }) 
+            })
         }
 
         res.json({
@@ -52,7 +52,7 @@ const createWorkspace = async (req = request, res = response) => {
         return res.status(400).json({
             title: '_400_ERROR_TITLE',
             message: '_400_ERROR_MESSAGE'
-        }) 
+        })
     }
 
     try {
@@ -66,7 +66,7 @@ const createWorkspace = async (req = request, res = response) => {
             return res.status(400).json({
                 title: '_400_ERROR_TITLE',
                 message: '_400_ERROR_MESSAGE'
-            }) 
+            })
         }
 
         res.json({
@@ -78,14 +78,14 @@ const createWorkspace = async (req = request, res = response) => {
 }
 
 const updateWorkspace = async (req = request, res = response) => {
-    const {_id} = req.query
-    const {isEnabled, ...filteredBody} = req.body
+    const { _id } = req.query
+    const { isEnabled, owner, members, locationVerificationStatus, ...filteredBody } = req.body
 
     if (!req.body || !_id) {
         return res.status(400).json({
             title: '_400_ERROR_TITLE',
             message: '_400_ERROR_MESSAGE'
-        }) 
+        })
     }
 
     const options = {
@@ -94,12 +94,12 @@ const updateWorkspace = async (req = request, res = response) => {
 
     try {
         const updated = await Workspace.findByIdAndUpdate(_id, filteredBody, options)
-        
+
         if (!updated) {
             return res.status(400).json({
                 title: '_400_ERROR_TITLE',
                 message: '_400_ERROR_MESSAGE'
-            }) 
+            })
         }
 
         res.json({
@@ -110,6 +110,69 @@ const updateWorkspace = async (req = request, res = response) => {
     }
 }
 
+const updateAddress = async (req, res) => {
+    const worskpaceId = req.query._id
+    const {_id, title, subtitle, isEnabled, logo, images, owner, members, locationVerificationStatus , ...cleanBody} = req.body
+
+    if (!worskpaceId) {
+        return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        })
+    }
+
+    const updateBody = {
+        locationVerificationStatus: "NOT_VERIFIED",
+        location: cleanBody.location
+    }
+
+    const options = {
+        new: true
+    }
+
+    try {
+        const workspace = await Workspace.findByIdAndUpdate(worskpaceId, updateBody, options)
+
+        res.json({
+            workspace
+        })
+    } catch (error) {
+        handleError(res, error)
+    }
+    
+}
+
+const verifyAddress = async (req, res) => {
+    const worskpaceId = req.query._id
+    const {locationVerificationStatus} = req.body
+
+    if (!locationVerificationStatus || !worskpaceId) {
+        return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        })
+    }
+
+    const updateBody = {
+        locationVerificationStatus: locationVerificationStatus
+    }
+
+    const options = {
+        new: true
+    }
+
+    try {
+        const workspace = await Workspace.findByIdAndUpdate(worskpaceId, updateBody, options)
+
+        res.json({
+            workspace
+        })
+    } catch (error) {
+        handleError(res, error)
+    }
+    
+}
+
 const deleteWorkspace = async (req = request, res = response) => {
     const _id = req.query._id
 
@@ -117,17 +180,17 @@ const deleteWorkspace = async (req = request, res = response) => {
         return res.status(400).json({
             title: '_400_ERROR_TITLE',
             message: '_400_ERROR_MESSAGE'
-        }) 
+        })
     }
 
     try {
         const deleted = await Workspace.findByIdAndRemove(_id)
-        
+
         if (!deleted) {
             return res.status(400).json({
                 title: '_400_ERROR_TITLE',
                 message: '_400_ERROR_MESSAGE'
-            }) 
+            })
         }
 
         res.json({
@@ -136,7 +199,7 @@ const deleteWorkspace = async (req = request, res = response) => {
     } catch (error) {
         handleError(res, error)
     }
-    
+
 }
 
 const deleteAllWorkspace = async (req = request, res = response) => {
@@ -148,4 +211,13 @@ const deleteAllWorkspace = async (req = request, res = response) => {
     }
 }
 
-module.exports = {getWorkspace, createWorkspace, updateWorkspace, deleteWorkspace, deleteAllWorkspace, getWorkspaceByUserId}
+module.exports = {
+    getWorkspace,
+    createWorkspace,
+    updateWorkspace,
+    deleteWorkspace,
+    deleteAllWorkspace,
+    getWorkspaceByUserId,
+    updateAddress,
+    verifyAddress
+}

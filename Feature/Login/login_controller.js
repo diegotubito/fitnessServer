@@ -36,6 +36,13 @@ const doLogin = async (req, res) => {
             })
         }
 
+        if (!user.isEnabled) {
+            return res.status(400).json({
+                title: '_LOGIN_ERROR',
+                message: '_USER_DEACTIVATED'
+            })            
+        }
+
         const isValid = bcrypt.compareSync(password, user.password)
         if (!isValid) {
             return res.status(400).json({
@@ -43,7 +50,6 @@ const doLogin = async (req, res) => {
                 message: '_WRONG_USER_PASSWORD'
             })
         }
-
 
         if (user.twoFactorEnabled) {
             const tempToken = jsonwebtoken.sign({ _id: user._id, step: '2FA' }, 'TemporarySecret', { expiresIn: 60 * 5 });
