@@ -29,7 +29,8 @@ const getWorkspaceByUserId = async (req = request, res = response) => {
                 { "owner": userId },
                 { "members.user": userId }
             ]
-        });
+        })
+        .populate('members.user')
 
         if (!workspaces) {
             return res.status(400).json({
