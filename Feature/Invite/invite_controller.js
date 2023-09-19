@@ -56,7 +56,14 @@ const getInvitationByWorkspaceId = async (req, res) => {
     }
 
     try {
-        const invitations = await Invitation.find({ workspace: workspaceId }).populate('workspace')
+        const invitations = await Invitation.find({ workspace: workspaceId })
+        .populate({
+            path: 'workspace',
+            populate: {
+                path: 'members.user'
+            }
+        })
+        .populate('user')
 
         if (!invitations) {
             return res.status(400).json({
