@@ -14,12 +14,37 @@ const getUsers = async (req = request, res) => {
     }
 }
 
+const getUsersByUserNameOrEmail = async (req = request, res) => {
+    try {
+        const { username } = req.query
+
+        if (!username) {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: '_400_ERROR_MESSAGE'
+            })
+        }
+
+        const query = {
+            $or: [
+                { email: username },
+                { username: username }
+            ]
+        }
+
+        const users = await User.find(query)
+        res.json({ users })
+    } catch (error) {
+        handleError(res, error)
+    }
+}
+
 const createUser = async (req, res) => {
     if (!req.body.email || !req.body.username || !req.body.password) {
         return res.status(400).json({
             title: '_400_ERROR_TITLE',
             message: '_400_ERROR_MESSAGE'
-        }) 
+        })
     }
     try {
         const body = req.body
@@ -57,7 +82,7 @@ const deleteUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const id = req.query._id
-    const {password, _id, email, role, createdAt, updatedAt, emailVerified, ...cleanBody} = req.body
+    const { password, _id, email, role, createdAt, updatedAt, emailVerified, ...cleanBody } = req.body
 
     const options = {
         new: true
@@ -97,7 +122,7 @@ const disableUser = async (req, res) => {
     }
 
     try {
-        const user = await User.findByIdAndUpdate(id, {isEnabled: false}, options)
+        const user = await User.findByIdAndUpdate(id, { isEnabled: false }, options)
 
         if (!user) {
             return res.status(400).json({
@@ -105,7 +130,7 @@ const disableUser = async (req, res) => {
             })
         }
 
-        res.json( {
+        res.json({
             user
         })
     } catch (error) {
@@ -121,7 +146,7 @@ const enableUser = async (req, res) => {
     }
 
     try {
-        const user = await User.findByIdAndUpdate(id, {isEnabled: true}, options)
+        const user = await User.findByIdAndUpdate(id, { isEnabled: true }, options)
 
         if (!user) {
             return res.status(400).json({
@@ -129,7 +154,7 @@ const enableUser = async (req, res) => {
             })
         }
 
-        res.json( {
+        res.json({
             user
         })
     } catch (error) {
@@ -137,4 +162,4 @@ const enableUser = async (req, res) => {
     }
 }
 
-module.exports = { getUsers, createUser, deleteUser, updateUser, disableUser, enableUser }
+module.exports = { getUsers, createUser, deleteUser, updateUser, disableUser, enableUser, getUsersByUserNameOrEmail }
