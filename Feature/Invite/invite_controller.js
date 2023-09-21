@@ -127,9 +127,9 @@ const doInvite = async (req, res) => {
 }
 
 const doReject = async (req, res) => {
-    const { invitationId } = req.query
+    const { _id } = req.query
 
-    if (!invitationId) {
+    if (!_id) {
         return res.status(400).json({
             title: '_400_ERROR_TITLE',
             message: '_400_ERROR_MESSAGE'
@@ -137,7 +137,7 @@ const doReject = async (req, res) => {
     }
 
     try {
-        const invitation = await Invitation.findById(invitationId)
+        const invitation = await Invitation.findById(_id)
 
         if (!invitation) {
             return res.status(400).json({
@@ -167,9 +167,9 @@ const doReject = async (req, res) => {
 }
 
 const doAccept = async (req, res) => {
-    const { invitationId } = req.query
+    const { _id } = req.query
 
-    if (!invitationId) {
+    if (!_id) {
         return res.status(400).json({
             title: '_400_ERROR_TITLE',
             message: '_400_ERROR_MESSAGE'
@@ -177,7 +177,7 @@ const doAccept = async (req, res) => {
     }
 
     try {
-        const invitation = await Invitation.findById(invitationId)
+        const invitation = await Invitation.findById(_id)
 
         if (!invitation) {
             return res.status(400).json({
