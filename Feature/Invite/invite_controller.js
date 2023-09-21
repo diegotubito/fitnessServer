@@ -27,7 +27,7 @@ const getInvitationByUserId = async (req, res) => {
 
     try {
         const invitations = await Invitation.find({ user: userId })
-        .populate('workspace')
+            .populate('workspace')
 
         if (!invitations) {
             return res.status(400).json({
@@ -57,13 +57,13 @@ const getInvitationByWorkspaceId = async (req, res) => {
 
     try {
         const invitations = await Invitation.find({ workspace: workspaceId })
-        .populate({
-            path: 'workspace',
-            populate: {
-                path: 'members.user'
-            }
-        })
-        .populate('user')
+            .populate({
+                path: 'workspace',
+                populate: {
+                    path: 'members.user'
+                }
+            })
+            .populate('user')
 
         if (!invitations) {
             return res.status(400).json({
@@ -102,8 +102,17 @@ const doInvite = async (req, res) => {
             })
         }
 
+        // Populate the 'user' field
+        const populatedInvite = await Invitation.findById(invite._id).populate({
+            path: 'workspace',
+            populate: {
+                path: 'members.user'
+            }
+        })
+            .populate('user')
+
         res.json({
-            invitation: invite
+            invitation: populatedInvite
         })
 
     } catch (error) {
@@ -134,10 +143,18 @@ const doReject = async (req, res) => {
         invitation.status = "REJECTED"
         const rejectedInvitation = await invitation.save()
 
-        res.json({
-            invitation: rejectedInvitation
+        // Populate the 'user' field
+        const populatedInvite = await Invitation.findById(rejectedInvitation._id).populate({
+            path: 'workspace',
+            populate: {
+                path: 'members.user'
+            }
         })
+            .populate('user')
 
+        res.json({
+            invitation: populatedInvite
+        })
     } catch (error) {
         handleError(res, error)
     }
@@ -190,14 +207,23 @@ const doAccept = async (req, res) => {
             user: acceptedInvitation.user,
             role: acceptedInvitation.role
         }
-        
+
         if (!isMemberInWorkspace(workspace.members, acceptedInvitation.user)) {
             workspace.members.push(newMember)
             const updatedWorkpace = await workspace.save()
         }
 
+        // Populate the 'user' field
+        const populatedInvite = await Invitation.findById(acceptedInvitation._id).populate({
+            path: 'workspace',
+            populate: {
+                path: 'members.user'
+            }
+        })
+            .populate('user')
+
         res.json({
-            invitation: acceptedInvitation
+            invitation: populatedInvite
         })
 
     } catch (error) {
@@ -216,4 +242,25 @@ const removeAllInvitation = async (req, res) => {
     }
 }
 
-module.exports = { doInvite, getAllInvitation, getInvitationByUserId, getInvitationByWorkspaceId, doReject, doAccept, removeAllInvitation }
+const removeInvitation = async (req, res) => {
+    try {
+        const { _id } = req.query
+        const deletedInvitation = await Invitation.findByIdAndRemove(_id)
+
+        if (!deletedInvitation) {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: '_400_ERROR_MESSAGE'
+            })
+        }
+
+        res.json({
+            success: true
+        })
+
+    } catch (error) {
+        handleError(res, error)
+    }
+}
+
+module.exports = { doInvite, getAllInvitation, getInvitationByUserId, getInvitationByWorkspaceId, doReject, doAccept, removeAllInvitation, removeInvitation }

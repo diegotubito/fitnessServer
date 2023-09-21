@@ -1,5 +1,5 @@
 const Router = require('express')
-const { doInvite, getAllInvitation, getInvitationByUserId, getInvitationByWorkspaceId, doReject, doAccept, removeAllInvitation } = require('./invite_controller')
+const { doInvite, getAllInvitation, getInvitationByUserId, getInvitationByWorkspaceId, doReject, doAccept, removeAllInvitation, removeInvitation } = require('./invite_controller')
 const isUserEnabled = require('../../Middleware/user_is_enabled')
 const {hasInvitation, isAlreadyMember} = require('./invite_validation')
 const router = Router()
@@ -16,6 +16,7 @@ router.post('/invitation', [
 router.post('/reject-invitation', doReject)
 router.post('/accept-invitation', doAccept)
 
-router.delete('/invitation', removeAllInvitation)
+router.delete('/invitation-delete-all', removeAllInvitation)
+router.delete('/invitation', removeInvitation)
 
 module.exports = router
