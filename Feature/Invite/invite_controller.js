@@ -27,7 +27,13 @@ const getInvitationByUserId = async (req, res) => {
 
     try {
         const invitations = await Invitation.find({ user: userId })
-            .populate('workspace')
+        .populate({
+            path: 'workspace',
+            populate: {
+                path: 'members.user'
+            }
+        })
+        .populate('user')
 
         if (!invitations) {
             return res.status(400).json({
