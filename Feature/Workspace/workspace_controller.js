@@ -95,6 +95,7 @@ const updateWorkspace = async (req = request, res = response) => {
 
     try {
         const updated = await Workspace.findByIdAndUpdate(_id, filteredBody, options)
+        .populate('members.user')
 
         if (!updated) {
             return res.status(400).json({

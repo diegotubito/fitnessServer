@@ -36,52 +36,6 @@ const uploadFile = async (req = request, res = response) => {
     }
 }
 
-const downloadFile = (req, res) => {
-    const filepath = req.query.filepath;
-
-    const bucket = req.app.get('bucket');
-    const file = bucket.file(filepath);
-
-    // Check if the file exists
-    file.exists((err, exists) => {
-        if (err) {
-            console.error('Failed to check file existence:', err.message);
-            res.status(500).json({ message: 'Internal Server Error' });
-        } else if (!exists) {
-            res.status(404).json({ message: 'File not found' });
-        } else {
-            // Determine content type based on file extension
-            const ext = path.extname(filepath);
-            let contentType;
-
-            switch (ext) {
-                case '.pdf':
-                    contentType = 'application/pdf';
-                    break;
-                case '.png':
-                    contentType = 'image/png';
-                    break;
-                case '.jpeg':
-                case '.jpg':
-                    contentType = 'image/jpeg';
-                    break;
-                case '.json':
-                    contentType = 'application/json'; // Content type for JSON files
-                    break;
-                // Add more cases for other file types as needed
-                default:
-                    contentType = 'application/octet-stream'; // Generic binary data
-            }
-
-            // Create a read stream from the file and pipe it to the response
-            const readStream = file.createReadStream();
-            res.setHeader('Content-Type', contentType); // Set the appropriate content type
-            readStream.pipe(res);
-        }
-    });
-};
-
-
 const deleteFile = (req = request, res = response) => {
     const filepath = req.query.filepath;
 
@@ -146,4 +100,4 @@ const getImageUrl = async (req, res) => {
     }
 }
 
-module.exports = { uploadFile, downloadFile, deleteFile, uploadMultipleFiles, getImageUrl }
+module.exports = { uploadFile, deleteFile, uploadMultipleFiles, getImageUrl }
