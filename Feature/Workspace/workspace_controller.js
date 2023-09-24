@@ -135,6 +135,7 @@ const updateAddress = async (req, res) => {
 
     try {
         const workspace = await Workspace.findByIdAndUpdate(worskpaceId, updateBody, options)
+        .populate('members.user')
 
         res.json({
             workspace
