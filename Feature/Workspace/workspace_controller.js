@@ -244,6 +244,41 @@ const deleteWorkspaceMember = async (req, res) => {
     }
 }
 
+const deleteWorkspaceLocation = async (req, res) => {
+    const {_id } = req.query
+
+    if (!_id ) {
+        return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        })
+    }
+
+    const updatedValue = {
+        location: null
+    }
+
+    try {
+        // Use the $pull operator to remove the member with the matching user ObjectId
+        const updatedWorkspace = await Workspace.findByIdAndUpdate(_id, updatedValue)
+        .populate('members.user')
+
+        if (!updatedWorkspace) {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: '_400_ERROR_MESSAGE'
+            });
+        }
+        
+        res.json({
+            workspace: updatedWorkspace
+        })
+
+    } catch (error) {
+        handleError(res, error)
+    }
+}
+
 const deleteAllWorkspace = async (req = request, res = response) => {
     try {
         await Invitation.deleteMany()
@@ -263,5 +298,6 @@ module.exports = {
     getWorkspaceByUserId,
     updateAddress,
     verifyAddress,
-    deleteWorkspaceMember
+    deleteWorkspaceMember,
+    deleteWorkspaceLocation
 }
