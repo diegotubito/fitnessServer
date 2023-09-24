@@ -8,9 +8,11 @@ const { getWorkspace,
     updateAddress, 
     verifyAddress, 
     deleteWorkspaceMember, 
-    deleteWorkspaceLocation} = require('./workspace_controller')
+    deleteWorkspaceLocation,
+    getWorkspaceAll} = require('./workspace_controller')
 const router = Router()
 
+router.get('/workspace-all', getWorkspaceAll)
 router.get('/workspace', getWorkspace)
 router.get('/workspace-by-user-id', getWorkspaceByUserId)
 router.put('/workspace', updateWorkspace)

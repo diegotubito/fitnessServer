@@ -3,12 +3,40 @@ const Workspace = require('./workspace_model')
 const Invitation = require('../Invite/invite_model')
 const handleError = require("../../Common/error_response")
 
-const getWorkspace = async (req = request, res = response) => {
+const getWorkspaceAll = async (req = request, res = response) => {
     try {
         const workspaces = await Workspace.find()
 
         res.json({
             workspaces
+        })
+    } catch (error) {
+        handleError(res, error)
+    }
+}
+
+const getWorkspace = async (req = request, res = response) => {
+    const { _id } = req.query
+    if (!_id) {
+        return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        })
+    }
+
+    try {
+        const workspace = await Workspace.findById(_id)
+        .populate('members.user')
+
+        if (!workspace) {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: '_400_ERROR_MESSAGE'
+            })
+        }
+
+        res.json({
+            workspace
         })
     } catch (error) {
         handleError(res, error)
@@ -291,6 +319,7 @@ const deleteAllWorkspace = async (req = request, res = response) => {
 
 module.exports = {
     getWorkspace,
+    getWorkspaceAll,
     createWorkspace,
     updateWorkspace,
     deleteWorkspace,
