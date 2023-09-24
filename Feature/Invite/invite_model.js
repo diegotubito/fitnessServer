@@ -17,8 +17,8 @@ const InvitationSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['PENDING', 'ACCEPTED', 'REJECTED'],
-        default: 'PENDING'
+        enum: ['INVITATION_PENDING', 'INVITATION_ACCEPTED', 'INVITATION_REJECTED'],
+        default: 'INVITATION_PENDING'
     },
     expiration: {
         type: Date,

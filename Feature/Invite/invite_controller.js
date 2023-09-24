@@ -146,7 +146,7 @@ const doReject = async (req, res) => {
             })
         }
 
-        invitation.status = "REJECTED"
+        invitation.status = "INVITATION_REJECTED"
         const rejectedInvitation = await invitation.save()
 
         // Populate the 'user' field
@@ -197,7 +197,7 @@ const doAccept = async (req, res) => {
             });
         }
 
-        invitation.status = "ACCEPTED"
+        invitation.status = "INVITATION_ACCEPTED"
         const acceptedInvitation = await invitation.save()
 
         const workspace = await Workspace.findById(acceptedInvitation.workspace)
