@@ -1,5 +1,6 @@
 const { request, response } = require("express")
 const Workspace = require('./workspace_model')
+const Invitation = require('../Invite/invite_model')
 const handleError = require("../../Common/error_response")
 
 const getWorkspace = async (req = request, res = response) => {
@@ -186,7 +187,11 @@ const deleteWorkspace = async (req = request, res = response) => {
     }
 
     try {
+        // Remove all invitations that have the deleted workspace's _id as their workspace field
+        await Invitation.deleteMany({ workspace: _id });
+        // Remove the workspace
         const deleted = await Workspace.findByIdAndRemove(_id)
+        .populate('members.user')
 
         if (!deleted) {
             return res.status(400).json({
@@ -194,6 +199,8 @@ const deleteWorkspace = async (req = request, res = response) => {
                 message: '_400_ERROR_MESSAGE'
             })
         }
+        
+        
 
         res.json({
             workspace: deleted
@@ -238,8 +245,9 @@ const deleteWorkspaceMember = async (req, res) => {
 
 const deleteAllWorkspace = async (req = request, res = response) => {
     try {
+        await Invitation.deleteMany()
         await Workspace.deleteMany()
-        res.json('all workspaces were deleted.')
+        res.json('all workspaces and invitations were deleted.')
     } catch (error) {
         handleError(res, error)
     }

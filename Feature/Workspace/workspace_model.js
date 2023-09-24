@@ -35,8 +35,7 @@ const GoogleGeocode = new Schema({
 const PointSchema = new Schema({
     type: {
         type: String,
-        enum: ['Point'],
-        required: true
+        enum: ['Point']
     },
     coordinates: {
         type: [Number],
