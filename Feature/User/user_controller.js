@@ -80,6 +80,17 @@ const deleteUser = async (req, res) => {
     }
 }
 
+const deleteAllUser = async (req, res) => {
+   
+    try {
+        const user = await User.deleteMany()
+
+        res.json('success')
+    } catch (error) {
+        handleError(res, error)
+    }
+}
+
 const updateUser = async (req, res) => {
     const id = req.query._id
     const { password, _id, email, role, createdAt, updatedAt, emailVerified, ...cleanBody } = req.body
@@ -162,4 +173,4 @@ const enableUser = async (req, res) => {
     }
 }
 
-module.exports = { getUsers, createUser, deleteUser, updateUser, disableUser, enableUser, getUsersByUserNameOrEmail }
+module.exports = { getUsers, createUser, deleteUser, updateUser, disableUser, enableUser, getUsersByUserNameOrEmail, deleteAllUser }

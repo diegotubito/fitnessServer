@@ -254,14 +254,18 @@ const deleteWorkspaceMember = async (req, res) => {
         // Use the $pull operator to remove the member with the matching user ObjectId
         const updatedWorkspace = await Workspace.findByIdAndUpdate(workspace, {
             $pull: { members: { user } }
-        }, { new: true });  // 'new: true' returns the modified document
-
+        }, { new: true })
+        .populate('members.user')
+        
         if (!updatedWorkspace) {
             return res.status(400).json({
                 title: '_400_ERROR_TITLE',
                 message: '_400_ERROR_MESSAGE'
             });
         }
+
+        // Delete all invitations related to that user and workspace.
+        await Invitation.deleteMany({ workspace: workspace, user: user });
         
         res.json({
             workspace: updatedWorkspace
