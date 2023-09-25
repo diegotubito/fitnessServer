@@ -71,6 +71,7 @@ const WorkspaceSchema = new Schema({
         },
         role: {
             type: String,
+            enum: ['ADMIN_ROLE', 'USER_ROLE', 'USER_READ_ONLY_ROLE'],
             required: [true, 'role for memeber is required']
         }
     }],
