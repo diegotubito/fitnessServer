@@ -79,8 +79,8 @@ const WorkspaceSchema = new Schema({
     },
     locationVerificationStatus: {
         type: String,
-        enum: ["NOT_VERIFIED", "PENDING", "VERIFIED", "REJECTED"],
-        default: "NOT_VERIFIED"
+        enum: ["ADDRESS_NOT_VERIFIED", "ADDRESS_PENDING", "ADDRESS_VERIFIED", "ADDRESS_REJECTED"],
+        default: "ADDRESS_NOT_VERIFIED"
     },
     locationVerifiedDocuments: [String],
     logo: {

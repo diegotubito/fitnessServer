@@ -153,7 +153,7 @@ const updateAddress = async (req, res) => {
     }
 
     const updateBody = {
-        locationVerificationStatus: "NOT_VERIFIED",
+        locationVerificationStatus: "ADDRESS_NOT_VERIFIED",
         location: cleanBody.location
     }
 
@@ -175,10 +175,9 @@ const updateAddress = async (req, res) => {
 }
 
 const verifyAddress = async (req, res) => {
-    const worskpaceId = req.query._id
-    const {locationVerificationStatus} = req.body
+    const {_id, status} = req.query
 
-    if (!locationVerificationStatus || !worskpaceId) {
+    if (!status || !_id) {
         return res.status(400).json({
             title: '_400_ERROR_TITLE',
             message: '_400_ERROR_MESSAGE'
@@ -186,7 +185,7 @@ const verifyAddress = async (req, res) => {
     }
 
     const updateBody = {
-        locationVerificationStatus: locationVerificationStatus
+        locationVerificationStatus: status
     }
 
     const options = {
@@ -194,7 +193,7 @@ const verifyAddress = async (req, res) => {
     }
 
     try {
-        const workspace = await Workspace.findByIdAndUpdate(worskpaceId, updateBody, options)
+        const workspace = await Workspace.findByIdAndUpdate(_id, updateBody, options)
 
         res.json({
             workspace
