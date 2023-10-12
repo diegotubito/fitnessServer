@@ -34,6 +34,7 @@ const getInvitationByUserId = async (req, res) => {
             }
         })
         .populate('user')
+        .populate('host')
 
         if (!invitations) {
             return res.status(400).json({
@@ -70,6 +71,7 @@ const getInvitationByWorkspaceId = async (req, res) => {
                 }
             })
             .populate('user')
+            .populate('host')
 
         if (!invitations) {
             return res.status(400).json({
@@ -116,6 +118,7 @@ const doInvite = async (req, res) => {
             }
         })
             .populate('user')
+            .populate('host')
 
         res.json({
             invitation: populatedInvite
@@ -157,6 +160,7 @@ const doReject = async (req, res) => {
             }
         })
             .populate('user')
+            .populate('host')
 
         res.json({
             invitation: populatedInvite
@@ -227,6 +231,7 @@ const doAccept = async (req, res) => {
             }
         })
             .populate('user')
+            .populate('host')
 
         res.json({
             invitation: populatedInvite

@@ -27,7 +27,12 @@ const InvitationSchema = new Schema({
             date.setDate(date.getDate() + 2)
             return date;
         }
+    },
+    host: {
+        type: Schema.Types.ObjectId,
+        ref: 'user',
+        required: [true, 'host is required']
     }
-})
+}, {timestamps: true})
 
 module.exports = model('invitation', InvitationSchema)
