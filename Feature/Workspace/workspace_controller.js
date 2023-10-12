@@ -27,6 +27,7 @@ const getWorkspace = async (req = request, res = response) => {
     try {
         const workspace = await Workspace.findById(_id)
         .populate('members.user')
+        .populate('members.host')
 
         if (!workspace) {
             return res.status(400).json({
@@ -60,6 +61,7 @@ const getWorkspaceByUserId = async (req = request, res = response) => {
             ]
         })
         .populate('members.user')
+        .populate('members.host')
 
         if (!workspaces) {
             return res.status(400).json({
@@ -125,6 +127,7 @@ const updateWorkspace = async (req = request, res = response) => {
     try {
         const updated = await Workspace.findByIdAndUpdate(_id, filteredBody, options)
         .populate('members.user')
+        .populate('members.host')
 
         if (!updated) {
             return res.status(400).json({
@@ -164,6 +167,7 @@ const updateAddress = async (req, res) => {
     try {
         const workspace = await Workspace.findByIdAndUpdate(worskpaceId, updateBody, options)
         .populate('members.user')
+        .populate('members.host')
 
         res.json({
             workspace
@@ -220,6 +224,7 @@ const deleteWorkspace = async (req = request, res = response) => {
         // Remove the workspace
         const deleted = await Workspace.findByIdAndRemove(_id)
         .populate('members.user')
+        .populate('members.host')
 
         if (!deleted) {
             return res.status(400).json({
@@ -255,6 +260,7 @@ const deleteWorkspaceMember = async (req, res) => {
             $pull: { members: { user } }
         }, { new: true })
         .populate('members.user')
+        .populate('members.host')
         
         if (!updatedWorkspace) {
             return res.status(400).json({
@@ -293,6 +299,7 @@ const deleteWorkspaceLocation = async (req, res) => {
         // Use the $pull operator to remove the member with the matching user ObjectId
         const updatedWorkspace = await Workspace.findByIdAndUpdate(_id, updatedValue)
         .populate('members.user')
+        .populate('members.host')
 
         if (!updatedWorkspace) {
             return res.status(400).json({

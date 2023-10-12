@@ -29,12 +29,13 @@ const getInvitationByUserId = async (req, res) => {
         const invitations = await Invitation.find({ user: userId })
         .populate({
             path: 'workspace',
-            populate: {
-                path: 'members.user'
-            }
+            populate: [
+                { path: 'members.user' },
+                { path: 'members.host' }
+            ]
         })
         .populate('user')
-        .populate('host')
+        .populate('host');
 
         if (!invitations) {
             return res.status(400).json({
@@ -64,14 +65,15 @@ const getInvitationByWorkspaceId = async (req, res) => {
 
     try {
         const invitations = await Invitation.find({ workspace: workspaceId })
-            .populate({
-                path: 'workspace',
-                populate: {
-                    path: 'members.user'
-                }
-            })
-            .populate('user')
-            .populate('host')
+        .populate({
+            path: 'workspace',
+            populate: [
+                { path: 'members.user' },
+                { path: 'members.host' }
+            ]
+        })
+        .populate('user')
+        .populate('host');
 
         if (!invitations) {
             return res.status(400).json({
@@ -111,14 +113,16 @@ const doInvite = async (req, res) => {
         }
 
         // Populate the 'user' field
-        const populatedInvite = await Invitation.findById(invite._id).populate({
+        const populatedInvite = await Invitation.findById(invite._id)
+        .populate({
             path: 'workspace',
-            populate: {
-                path: 'members.user'
-            }
+            populate: [
+                { path: 'members.user' },
+                { path: 'members.host' }
+            ]
         })
-            .populate('user')
-            .populate('host')
+        .populate('user')
+        .populate('host');
 
         res.json({
             invitation: populatedInvite
@@ -153,14 +157,16 @@ const doReject = async (req, res) => {
         const rejectedInvitation = await invitation.save()
 
         // Populate the 'user' field
-        const populatedInvite = await Invitation.findById(rejectedInvitation._id).populate({
+        const populatedInvite = await Invitation.findById(rejectedInvitation._id)
+        .populate({
             path: 'workspace',
-            populate: {
-                path: 'members.user'
-            }
+            populate: [
+                { path: 'members.user' },
+                { path: 'members.host' }
+            ]
         })
-            .populate('user')
-            .populate('host')
+        .populate('user')
+        .populate('host');
 
         res.json({
             invitation: populatedInvite
@@ -215,7 +221,8 @@ const doAccept = async (req, res) => {
 
         const newMember = {
             user: acceptedInvitation.user,
-            role: acceptedInvitation.role
+            role: acceptedInvitation.role, 
+            host: acceptedInvitation.host
         }
 
         if (!isMemberInWorkspace(workspace.members, acceptedInvitation.user)) {
@@ -224,14 +231,16 @@ const doAccept = async (req, res) => {
         }
 
         // Populate the 'user' field
-        const populatedInvite = await Invitation.findById(acceptedInvitation._id).populate({
+        const populatedInvite = await Invitation.findById(acceptedInvitation._id)
+        .populate({
             path: 'workspace',
-            populate: {
-                path: 'members.user'
-            }
+            populate: [
+                { path: 'members.user' },
+                { path: 'members.host' }
+            ]
         })
-            .populate('user')
-            .populate('host')
+        .populate('user')
+        .populate('host');
 
         res.json({
             invitation: populatedInvite

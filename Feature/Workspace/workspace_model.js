@@ -73,6 +73,10 @@ const WorkspaceSchema = new Schema({
             type: String,
             enum: ['ADMIN_ROLE', 'USER_ROLE', 'USER_READ_ONLY_ROLE'],
             required: [true, 'role for memeber is required']
+        },
+        host: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
         }
     }],
     location: {
