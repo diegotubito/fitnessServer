@@ -47,6 +47,12 @@ const PointSchema = new Schema({
     }
 }, {_id: false});
 
+const AddressDocument = new Schema({
+    url: {
+        type: String
+    }
+})
+
 const WorkspaceSchema = new Schema({
     title: {
         type: String,
@@ -91,7 +97,7 @@ const WorkspaceSchema = new Schema({
         enum: ["ADDRESS_NOT_VERIFIED", "ADDRESS_PENDING", "ADDRESS_VERIFIED", "ADDRESS_REJECTED"],
         default: "ADDRESS_NOT_VERIFIED"
     },
-    locationVerifiedDocuments: [String],
+    locationVerifiedDocuments: [AddressDocument],
     logo: {
         type: String
     },

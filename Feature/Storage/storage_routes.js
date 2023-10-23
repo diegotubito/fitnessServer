@@ -6,7 +6,7 @@ const verifyToken = require('../../Middleware/verify_token');
 const { downloadFile } = require('./storage_download_file_controller');
 const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+    limits: { fileSize: 20 * 1024 * 1024 }, // 10 MB
 });
 
 router.post('/storage', [
