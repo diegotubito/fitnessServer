@@ -178,6 +178,91 @@ const updateAddress = async (req, res) => {
     
 }
 
+const addDocument = async (req, res) => {
+    const {_id, url} = req.body
+
+    if (!_id || !url) {
+        return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        })
+    }
+
+   try {
+        const workspace = await Workspace.findById(_id)
+        .populate('members.user')
+        .populate('members.host')
+
+        if (!workspace) {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: '_400_ERROR_MESSAGE'
+            })
+        }
+
+        // Check if the url already exists in locationVerifiedDocuments
+        if (!workspace.locationVerifiedDocuments.includes(url)) {
+            workspace.locationVerifiedDocuments.push(url);
+            await workspace.save();
+        } else {
+            // The document is already in the list;
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: 'Document URL is already in the list.'
+            });
+        }
+
+        res.json({
+            workspace
+        })
+   } catch (error) {
+        handleError(res, error)
+   }
+}
+
+const removeDocument = async (req, res) => {
+    const {_id, url} = req.body
+
+    if (!_id || !url) {
+        return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        })
+    }
+
+   try {
+        const workspace = await Workspace.findById(_id)
+        .populate('members.user')
+        .populate('members.host')
+
+        if (!workspace) {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: '_400_ERROR_MESSAGE'
+            })
+        }
+
+        // Check if the url already exists in locationVerifiedDocuments
+        if (workspace.locationVerifiedDocuments.includes(url)) {
+            // Remove the URL
+            workspace.locationVerifiedDocuments = workspace.locationVerifiedDocuments.filter((doc) => doc !== url)
+            await workspace.save();
+        } else {
+            // The document is already in the list;
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: 'Document URL is not in the list.'
+            });
+        }
+
+        res.json({
+            workspace
+        })
+   } catch (error) {
+        handleError(res, error)
+   }
+}
+
 const verifyAddress = async (req, res) => {
     const {_id, status} = req.query
 
@@ -338,5 +423,7 @@ module.exports = {
     updateAddress,
     verifyAddress,
     deleteWorkspaceMember,
-    deleteWorkspaceLocation
+    deleteWorkspaceLocation,
+    addDocument,
+    removeDocument
 }

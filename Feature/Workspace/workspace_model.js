@@ -77,6 +77,10 @@ const WorkspaceSchema = new Schema({
         host: {
             type: Schema.Types.ObjectId,
             ref: 'user'
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now()
         }
     }],
     location: {
