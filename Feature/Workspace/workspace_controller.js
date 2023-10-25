@@ -179,7 +179,7 @@ const updateAddress = async (req, res) => {
 }
 
 const addDocument = async (req, res) => {
-    const {_id, url, documentId} = req.body
+    const {_id, url, size, fileType, documentId, creator} = req.body
 
     if (!_id || !url || !documentId) {
         return res.status(400).json({
@@ -203,12 +203,15 @@ const addDocument = async (req, res) => {
         workspace.locationVerificationStatus = "ADDRESS_PENDING"
         const newDocument = {
             _id: documentId,
-            url
+            url,
+            size,
+            fileType,
+            creator
         }
 
         // Check if the url already exists in locationVerifiedDocuments
-        if (!workspace.locationVerifiedDocuments.some(document => document.url === url)) {
-            workspace.locationVerifiedDocuments.push(newDocument);
+        if (!workspace.documentImages.some(document => document.url === url)) {
+            workspace.documentImages.push(newDocument);
             await workspace.save();
         } else {
             // The document is already in the list;
@@ -249,9 +252,9 @@ const removeDocument = async (req, res) => {
         }
         
         // Check if the url already exists in locationVerifiedDocuments
-        if (workspace.locationVerifiedDocuments.some(document => document.url === url)) {
+        if (workspace.documentImages.some(document => document.url === url)) {
             // Remove the URL
-            workspace.locationVerifiedDocuments = workspace.locationVerifiedDocuments.filter((doc) => doc.url !== url)
+            workspace.documentImages = workspace.documentImages.filter((doc) => doc.url !== url)
             await workspace.save();
         } else {
             // The document is already in the list;

@@ -47,9 +47,24 @@ const PointSchema = new Schema({
     }
 }, {_id: false});
 
-const AddressDocument = new Schema({
+const ImageModel = new Schema({
     url: {
+        type: String,
+        required: [true, 'the image url is required']
+    },
+    size: {
+        type: Number
+    },
+    fileType: {
         type: String
+    },
+    dimensions: {
+        width: Number,
+        height: Number
+    },
+    creator: {
+        type: Schema.Types.ObjectId,
+        required: [true, 'image creator is required']
     }
 })
 
@@ -97,11 +112,13 @@ const WorkspaceSchema = new Schema({
         enum: ["ADDRESS_NOT_VERIFIED", "ADDRESS_PENDING", "ADDRESS_VERIFIED", "ADDRESS_REJECTED"],
         default: "ADDRESS_NOT_VERIFIED"
     },
-    locationVerifiedDocuments: [AddressDocument],
+    documentImages: [ImageModel],
+    documentThumbnails: [ImageModel],
     logo: {
         type: String
     },
-    images: [Schema.Types.Mixed],
+    images: [ImageModel],
+    thumbnails: [ImageModel],
 }, { timestamps: true })
 
 module.exports = model('workspace', WorkspaceSchema)
