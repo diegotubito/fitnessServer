@@ -179,9 +179,9 @@ const updateAddress = async (req, res) => {
 }
 
 const addDocument = async (req, res) => {
-    const {_id, url, size, fileType, documentId, creator} = req.body
+    const {_id, documentId, creator, highResImage, thumbnailImage} = req.body
 
-    if (!_id || !url || !documentId) {
+    if (!_id || !documentId || !creator) {
         return res.status(400).json({
             title: '_400_ERROR_TITLE',
             message: '_400_ERROR_MESSAGE'
@@ -203,21 +203,20 @@ const addDocument = async (req, res) => {
         workspace.locationVerificationStatus = "ADDRESS_PENDING"
         const newDocument = {
             _id: documentId,
-            url,
-            size,
-            fileType,
+            highResImage: highResImage,
+            thumbnailImage: thumbnailImage,
             creator
         }
 
         // Check if the url already exists in locationVerifiedDocuments
-        if (!workspace.documentImages.some(document => document.url === url)) {
+        if (!workspace.documentImages.some(document => document._id === documentId)) {
             workspace.documentImages.push(newDocument);
             await workspace.save();
         } else {
             // The document is already in the list;
             return res.status(400).json({
                 title: '_400_ERROR_TITLE',
-                message: 'Document URL is already in the list.'
+                message: 'Document is already in the list.'
             });
         }
 
@@ -230,9 +229,9 @@ const addDocument = async (req, res) => {
 }
 
 const removeDocument = async (req, res) => {
-    const {_id, url} = req.body
+    const {_id, documentId} = req.body
 
-    if (!_id || !url) {
+    if (!_id || !documentId) {
         return res.status(400).json({
             title: '_400_ERROR_TITLE',
             message: '_400_ERROR_MESSAGE'
@@ -251,18 +250,17 @@ const removeDocument = async (req, res) => {
             })
         }
         
-        // Check if the url already exists in locationVerifiedDocuments
-        if (workspace.documentImages.some(document => document.url === url)) {
+        if (workspace.documentImages.some(document => document._id.toString() === documentId)) {
             // Remove the URL
-            workspace.documentImages = workspace.documentImages.filter((doc) => doc.url !== url)
+            workspace.documentImages = workspace.documentImages.filter((doc) => doc._id.toString() !== documentId);
             await workspace.save();
         } else {
-            // The document is already in the list;
             return res.status(400).json({
                 title: '_400_ERROR_TITLE',
                 message: 'Document URL is not in the list.'
             });
         }
+        
 
         res.json({
             workspace

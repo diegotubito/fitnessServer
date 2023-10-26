@@ -47,7 +47,7 @@ const PointSchema = new Schema({
     }
 }, {_id: false});
 
-const ImageModel = new Schema({
+const SingleImageModel = new Schema({
     url: {
         type: String,
         required: [true, 'the image url is required']
@@ -61,12 +61,17 @@ const ImageModel = new Schema({
     dimensions: {
         width: Number,
         height: Number
-    },
+    }
+}, {_id: false})
+
+const ImageModel = new Schema({
+    highResImage: SingleImageModel,
+    thumbnailImage: SingleImageModel,
     creator: {
         type: Schema.Types.ObjectId,
         required: [true, 'image creator is required']
     }
-})
+}, {timestamps: true})
 
 const WorkspaceSchema = new Schema({
     title: {
@@ -113,12 +118,10 @@ const WorkspaceSchema = new Schema({
         default: "ADDRESS_NOT_VERIFIED"
     },
     documentImages: [ImageModel],
-    documentThumbnails: [ImageModel],
     logo: {
         type: String
     },
     images: [ImageModel],
-    thumbnails: [ImageModel],
 }, { timestamps: true })
 
 module.exports = model('workspace', WorkspaceSchema)
