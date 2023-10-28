@@ -118,9 +118,8 @@ const WorkspaceSchema = new Schema({
         default: "ADDRESS_NOT_VERIFIED"
     },
     documentImages: [ImageModel],
-    logo: {
-        type: String
-    },
+    defaultImage: ImageModel,
+    defaultBackgroundImage: ImageModel,
     images: [ImageModel],
 }, { timestamps: true })
 

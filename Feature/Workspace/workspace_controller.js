@@ -6,6 +6,8 @@ const handleError = require("../../Common/error_response")
 const getWorkspaceAll = async (req = request, res = response) => {
     try {
         const workspaces = await Workspace.find()
+        .populate('members.user')
+        .populate('members.host')
 
         res.json({
             workspaces
@@ -176,6 +178,84 @@ const updateAddress = async (req, res) => {
         handleError(res, error)
     }
     
+}
+
+const addDefaultBackgroundImage = async (req, res) => {
+    const {_id, creator, highResImage, thumbnailImage} = req.body
+
+    if (!_id || !creator) {
+        return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        })
+    }
+
+   try {
+        const workspace = await Workspace.findById(_id)
+        .populate('members.user')
+        .populate('members.host')
+
+        if (!workspace) {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: '_400_ERROR_MESSAGE'
+            })
+        }
+
+        const newImage = {
+            highResImage: highResImage,
+            thumbnailImage: thumbnailImage,
+            creator
+        }
+
+        workspace.defaultBackgroundImage = newImage
+        await workspace.save()
+
+        res.json({
+            workspace
+        })
+   } catch (error) {
+        handleError(res, error)
+   }
+}
+
+const addDefaultImage = async (req, res) => {
+    const {_id, creator, highResImage, thumbnailImage} = req.body
+
+    if (!_id || !creator) {
+        return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        })
+    }
+
+   try {
+        const workspace = await Workspace.findById(_id)
+        .populate('members.user')
+        .populate('members.host')
+
+        if (!workspace) {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: '_400_ERROR_MESSAGE'
+            })
+        }
+
+        const newImage = {
+            highResImage: highResImage,
+            thumbnailImage: thumbnailImage,
+            creator
+        }
+
+        workspace.defaultImage = newImage
+        await workspace.save()
+
+        res.json({
+            workspace
+        })
+   } catch (error) {
+        handleError(res, error)
+   }
 }
 
 const addDocument = async (req, res) => {
@@ -432,5 +512,7 @@ module.exports = {
     deleteWorkspaceMember,
     deleteWorkspaceLocation,
     addDocument,
-    removeDocument
+    removeDocument,
+    addDefaultImage,
+    addDefaultBackgroundImage
 }
