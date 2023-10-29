@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose')
+const {ImageModel} = require('../Image/image_model')
 
 const PhoneSchema = new Schema({
     countryName: {
@@ -14,12 +15,6 @@ const PhoneSchema = new Schema({
         type: String
     }
 })
-
-const ProfileImageSchema = new Schema({
-    url: {
-        type: String
-    } 
-}, {timestamps: true})
 
 const UserSchema = new Schema({
     username: {
@@ -42,9 +37,7 @@ const UserSchema = new Schema({
     lastName : {
         type : String 
     },
-    profileImage : {
-        type : ProfileImageSchema
-    },
+    profileImage : ImageModel,
     isEnabled: {
         type: Boolean,
         default: true

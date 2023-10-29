@@ -1,6 +1,7 @@
 const { Schema, model, SchemaTypes } = require('mongoose')
 
 const Invitation = require('../../Feature/Invite/invite_model')
+const {ImageModel} = require('../Image/image_model')
 
 const locationSchema = new Schema({
     lat: { type: Number, required: true },
@@ -46,32 +47,6 @@ const PointSchema = new Schema({
         type: GoogleGeocode
     }
 }, {_id: false});
-
-const SingleImageModel = new Schema({
-    url: {
-        type: String,
-        required: [true, 'the image url is required']
-    },
-    size: {
-        type: Number
-    },
-    fileType: {
-        type: String
-    },
-    dimensions: {
-        width: Number,
-        height: Number
-    }
-}, {_id: false})
-
-const ImageModel = new Schema({
-    highResImage: SingleImageModel,
-    thumbnailImage: SingleImageModel,
-    creator: {
-        type: Schema.Types.ObjectId,
-        required: [true, 'image creator is required']
-    }
-}, {timestamps: true})
 
 const WorkspaceSchema = new Schema({
     title: {

@@ -125,6 +125,44 @@ const updateUser = async (req, res) => {
     }
 }
 
+const setProfileImage = async (req, res) => {
+    const {_id, documentId, creator, highResImage, thumbnailImage} = req.body
+
+    if (!_id || !documentId || !creator) {
+        return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        })
+    }
+
+   try {
+        const user = await User.findById(_id)
+
+        if (!user) {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: '_400_ERROR_MESSAGE'
+            })
+        }
+
+        const newImage = {
+            _id: documentId,
+            highResImage: highResImage,
+            thumbnailImage: thumbnailImage,
+            creator
+        }
+
+        user.profileImage = newImage
+        await user.save();
+
+        res.json({
+            user
+        })
+   } catch (error) {
+        handleError(res, error)
+   }
+}
+
 const disableUser = async (req, res) => {
     const id = req.query._id
 
@@ -173,4 +211,12 @@ const enableUser = async (req, res) => {
     }
 }
 
-module.exports = { getUsers, createUser, deleteUser, updateUser, disableUser, enableUser, getUsersByUserNameOrEmail, deleteAllUser }
+module.exports = { getUsers,
+     createUser,
+      deleteUser,
+       updateUser,
+        disableUser,
+         enableUser,
+          getUsersByUserNameOrEmail,
+           deleteAllUser, 
+           setProfileImage }
