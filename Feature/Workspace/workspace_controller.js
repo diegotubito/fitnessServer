@@ -258,6 +258,56 @@ const addDefaultImage = async (req, res) => {
    }
 }
 
+const pushWorkspaceImage = async (req, res) => {
+    const {_id, documentId, creator, highResImage, thumbnailImage} = req.body
+
+    if (!_id || !documentId || !creator) {
+        return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        })
+    }
+
+   try {
+        const workspace = await Workspace.findById(_id)
+        .populate('members.user')
+        .populate('members.host')
+
+        if (!workspace) {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: '_400_ERROR_MESSAGE'
+            })
+        }
+
+        const newDocument = {
+            _id: documentId,
+            highResImage: highResImage,
+            thumbnailImage: thumbnailImage,
+            creator
+        }
+
+        // Check if the url already exists in locationVerifiedDocuments
+        if (!workspace.images.some(document => document._id === documentId)) {
+            workspace.images.push(newDocument);
+            await workspace.save();
+        } else {
+            // The document is already in the list;
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: 'Image url is already in the list.'
+            });
+        }
+
+        res.json({
+            workspace
+        })
+   } catch (error) {
+        handleError(res, error)
+   }
+}
+
+
 const addDocument = async (req, res) => {
     const {_id, documentId, creator, highResImage, thumbnailImage} = req.body
 
@@ -349,6 +399,48 @@ const removeDocument = async (req, res) => {
         handleError(res, error)
    }
 }
+
+const pullWorkspaceImage = async (req, res) => {
+    const {_id, documentId} = req.body
+
+    if (!_id || !documentId) {
+        return res.status(400).json({
+            title: '_400_ERROR_TITLE',
+            message: '_400_ERROR_MESSAGE'
+        })
+    }
+
+   try {
+        const workspace = await Workspace.findById(_id)
+        .populate('members.user')
+        .populate('members.host')
+
+        if (!workspace) {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: '_400_ERROR_MESSAGE'
+            })
+        }
+        
+        if (workspace.images.some(document => document._id.toString() === documentId)) {
+            // Remove the URL
+            workspace.images = workspace.images.filter((doc) => doc._id.toString() !== documentId);
+            await workspace.save();
+        } else {
+            return res.status(400).json({
+                title: '_400_ERROR_TITLE',
+                message: 'Document URL is not in the list.'
+            });
+        }
+        
+        res.json({
+            workspace
+        })
+   } catch (error) {
+        handleError(res, error)
+   }
+}
+
 
 const verifyAddress = async (req, res) => {
     const {_id, status} = req.query
@@ -514,5 +606,7 @@ module.exports = {
     addDocument,
     removeDocument,
     addDefaultImage,
-    addDefaultBackgroundImage
+    addDefaultBackgroundImage,
+    pushWorkspaceImage,
+    pullWorkspaceImage
 }

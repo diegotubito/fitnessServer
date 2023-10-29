@@ -13,7 +13,9 @@ const { getWorkspace,
     addDocument,
     removeDocument, 
     addDefaultImage,
-    addDefaultBackgroundImage} = require('./workspace_controller')
+    addDefaultBackgroundImage,
+    pushWorkspaceImage,
+    pullWorkspaceImage} = require('./workspace_controller')
 const router = Router()
 
 router.get('/workspace-all', getWorkspaceAll)
@@ -31,5 +33,7 @@ router.post('/add-document-workspace', addDocument)
 router.delete('/add-document-workspace', removeDocument)
 router.post('/workspace/default-image', addDefaultImage)
 router.post('/workspace/default-background-image', addDefaultBackgroundImage)
+router.post('/workspace/image', pushWorkspaceImage)
+router.delete('/workspace/image', pullWorkspaceImage)
 
 module.exports = router
