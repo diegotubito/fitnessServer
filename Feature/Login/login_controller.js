@@ -56,10 +56,12 @@ const doLogin = async (req, res) => {
 
             return res.json({
                 twoFactorEnabled: true,
-                tempToken,
+                tempToken, // this is the only token that at this point is going to be used to pass OTP
                 user,
                 accessToken: '', //  not yet available because we need to finish auth
-                accessTokenExpirationDateString: Date()
+                accessTokenExpirationDateString: Date(),
+                refreshToken: '', // not yet
+                refreshTokenExpirationDateString: Date()
             })
         }
 
