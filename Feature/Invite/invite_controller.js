@@ -6,6 +6,15 @@ const { isMemberInWorkspace } = require("../../Common/common_functions")
 const getAllInvitation = async (req, res) => {
     try {
         const invitations = await Invitation.find().populate('workspace')
+        .populate({
+            path: 'workspace',
+            populate: [
+                { path: 'members.user' },
+                { path: 'members.host' }
+            ]
+        })
+        .populate('user')
+        .populate('host');
 
         res.json({
             invitations

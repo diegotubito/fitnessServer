@@ -40,8 +40,7 @@ const PointSchema = new Schema({
     },
     coordinates: {
         type: [Number],
-        required: true,
-        unique: [true, 'spot coordintates must be unique'],
+        required: true
     },
     googleGeocode: {
         type: GoogleGeocode
